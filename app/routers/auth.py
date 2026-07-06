@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select 
-from app.auth import hash_password
+from app.auth import hash_password,verify_password,create_access_token,verify_access_token
 from app.models.user import User
 from app.database import get_session
-from app.schemas.userschemas import UserRead,UserCreate
-
-
+from app.schemas.userschemas import UserRead,UserCreate,UserLogin
 
 router = APIRouter(
     prefix="/auth",
@@ -33,3 +31,30 @@ def create_user(user:UserCreate, session:Session = Depends(get_session)):
     session.commit()
     session.refresh(db_user)
     return db_user
+
+
+@router.post("/login")
+def login_user(user : UserLogin, session:Session = Depends(get_session)):
+    check_email = session.exec(select(User).where(User.email == user.email)).first()
+    if not check_email:
+        raise HTTPException(status_code=401, detail= "email or password wrong")
+
+    if not verify_password(
+        user.password,
+        check_email.hashed_password
+    ):
+       raise HTTPException(status_code=401, detail= "email or password wrong")
+
+    access_token = create_access_token(
+        {
+            "sub" : str(check_email.id),
+            "role": check_email.role
+        }
+    )
+    return {
+        "access_token" : access_token,
+        "token_type" : "bearer"
+    }
+
+
+

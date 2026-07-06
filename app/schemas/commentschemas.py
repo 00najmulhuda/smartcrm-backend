@@ -15,5 +15,6 @@ class CommentRead(BaseModel):
     created_at : datetime
 
 class CommentUpdate(BaseModel):
-    content : Optional[str] = Field(default=None)
+    content : Optional[str] = Field(default=None, min_length=1, max_length=20)
+    
 

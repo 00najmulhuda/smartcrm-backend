@@ -4,7 +4,12 @@ import os
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi import HTTPException
-from pydantic import HttpUrl
+from fastapi.security import OAuth2AuthorizationCodeBearer
+
+oauth2_scheme = OAuth2AuthorizationCodeBearer(
+    tokenUrl= "/auth/login"
+)
+
 
 load_dotenv()
 
@@ -56,13 +61,19 @@ def verify_access_token(token : str):
             algorithms=[ALGORITHM]
         )
         user_id = payload.get("sub")
+        role = payload.get("role")
         if not user_id:
             raise HTTPException(status_code =401, detail="invalid token")
-        return user_id
+        return {
+            "user_id": user_id,
+            "role": role
+        }
 
     except JWTError:
         raise HTTPException(
             status_code=401,
             detail= "invalid token"
         )
+
+        
 
