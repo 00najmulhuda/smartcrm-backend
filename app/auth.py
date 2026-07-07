@@ -4,11 +4,6 @@ import os
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi import HTTPException
-from fastapi.security import OAuth2AuthorizationCodeBearer
-
-oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    tokenUrl= "/auth/login"
-)
 
 
 load_dotenv()

@@ -4,11 +4,11 @@ from datetime import datetime
 
 
 class CategoryCreate(BaseModel):
-    name : str = Field(min_length = 3, max_length = 50)
+    name : str = Field(min_length = 2, max_length = 50)
 
 class CategoryRead(BaseModel):
     id : int
     name : str
 
 class CategoryUpdate(BaseModel):
-    name : Optional[str] = Field(default=None, min_length=3, max_length=50)
+    name : Optional[str] = Field(default=None, min_length=2, max_length=50)
