@@ -6,6 +6,8 @@ from app.models.category import Category
 from app.schemas.blogpostschemas import BlogPostRead, BlogPostCreate, BlogPostUpdate
 from app.models.blog_post import BlogPost
 from app.schemas.categoryschemas import CategoryCreate, CategoryRead
+from app.models.comment import Comment
+from app.schemas.commentschemas import CommentRead, CommentCreate
 
 
 router = APIRouter(
@@ -205,4 +207,25 @@ def delete_blog(
     "message": "blog delete successfully"
    }
 
+#Comment route----------------------------------------------------------------
+@router.post("/comments", response_model=CommentRead)
+def create_comment(
+    comment: CommentCreate,
+    session : Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_blog = session.get(BlogPost, comment.blog_post_id)
+    if not db_blog:
+        raise HTTPException(status_code=404, detail="blog not found")
+    
+    db_comment = Comment(
+        content= comment.content,
+        blog_post_id=comment.blog_post_id,
+        user_id=current_user.id
+    )
 
+    session.add(db_comment)
+    session.commit()
+    session.refresh(db_comment)
+    
+    return db_comment
