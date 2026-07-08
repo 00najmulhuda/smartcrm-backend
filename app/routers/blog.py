@@ -229,3 +229,20 @@ def create_comment(
     session.refresh(db_comment)
     
     return db_comment
+
+
+@router.get("/blogs/{blog_id}/comments", response_model=list[CommentRead])
+def get_comment_by_blog(
+    blog_id:int,
+    session:Session = Depends(get_session),
+):
+    db_blog = session.get(BlogPost, blog_id)
+    if not db_blog:
+        raise HTTPException(status_code=404, detail="blog not found")
+
+    all_comments = session.exec(
+        select(Comment)
+        .where(Comment.blog_post_id == blog_id)
+    ).all()
+
+    return all_comments

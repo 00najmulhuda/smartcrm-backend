@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 from typing import Optional
 
@@ -13,6 +13,8 @@ class CommentRead(BaseModel):
     user_id : int 
     blog_post_id : int
     created_at : datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 class CommentUpdate(BaseModel):
     content : Optional[str] = Field(default=None, min_length=1, max_length=20)
