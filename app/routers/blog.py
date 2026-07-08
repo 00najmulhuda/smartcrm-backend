@@ -182,3 +182,27 @@ def update_blog(
 
    return db_blog
 
+
+@router.delete("/blogs/{blog_id}")
+def delete_blog(
+    blog_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+   db_blog = session.get(BlogPost, blog_id)
+   if not db_blog:
+    raise HTTPException(
+        status_code=404, detail="blog not found"
+    )
+   
+   if db_blog.user_id != current_user.id and current_user.role != "admin":
+    raise HTTPException(status_code=403, detail="access denied")
+
+   session.delete(db_blog)
+   session.commit()
+ 
+   return{
+    "message": "blog delete successfully"
+   }
+
+
