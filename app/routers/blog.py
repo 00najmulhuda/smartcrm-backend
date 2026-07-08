@@ -1,3 +1,4 @@
+from tarfile import data_filter
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from app.database import get_session
@@ -7,7 +8,7 @@ from app.schemas.blogpostschemas import BlogPostRead, BlogPostCreate, BlogPostUp
 from app.models.blog_post import BlogPost
 from app.schemas.categoryschemas import CategoryCreate, CategoryRead
 from app.models.comment import Comment
-from app.schemas.commentschemas import CommentRead, CommentCreate
+from app.schemas.commentschemas import CommentRead, CommentCreate, CommentUpdate
 
 
 router = APIRouter(
@@ -246,3 +247,32 @@ def get_comment_by_blog(
     ).all()
 
     return all_comments
+
+#update comment----------------------------------------------------------
+@router.put("/comments/{comment_id}", response_model=CommentRead)
+def update_comment(
+    comment_id:int,
+    upload:CommentUpdate,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+   db_comment = session.get(Comment, comment_id)
+   if not db_comment:
+        raise HTTPException(
+            status_code=404,
+            detail="comment not found"
+    )
+
+   if db_comment.user_id != current_user.id and current_user.role != "admin":
+       raise HTTPException(status_code=403, detail="access denied")
+
+   if upload.content is None:
+        raise HTTPException(status_code=400, detail="nothing to update")
+        
+   db_comment.content = upload.content
+    
+   session.commit()
+   session.refresh(db_comment)
+
+   return db_comment
+    
