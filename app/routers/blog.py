@@ -276,3 +276,24 @@ def update_comment(
 
    return db_comment
     
+#Delete comment----------------------------------------------------------------------
+@router.delete("/comments/{comment_id}")
+def delete_comment(
+    comment_id: int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_comment = session.get(Comment, comment_id)
+    if not db_comment:
+        raise HTTPException(
+            status_code=404, detail="comment not found"
+        )
+    if db_comment.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="access denied")
+
+    session.delete(db_comment)
+    session.commit()
+
+    return {
+        "message" : "comment deleted successfully"
+    }
