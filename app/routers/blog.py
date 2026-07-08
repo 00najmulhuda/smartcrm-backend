@@ -1,4 +1,3 @@
-from signal import raise_signal
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from app.database import get_session
@@ -149,23 +148,35 @@ def update_blog(
    if db_blog.user_id != current_user.id and current_user.role != "admin":
     raise HTTPException(status_code=403,detail="access denied")
 
-   check_blog = session.exec(
-    select(BlogPost)
-    .where(BlogPost.title == blog.title)
-    .where(BlogPost.id != blog_id)
-   ).first()
-   if check_blog:
-    raise HTTPException(status_code=409, detail="blog already exist")
+   if blog.title:
+    check_blog = session.exec(
+        select(BlogPost)
+        .where(BlogPost.title == blog.title)
+        .where(BlogPost.id != blog_id)
+    ).first()
+
+    if check_blog:
+        raise HTTPException(status_code=409, detail="blog title already exist")
+   
+   if blog.category_id is not None:
+    category = session.get(Category, blog.category_id)
+    if not category:
+        raise HTTPException(status_code=404, detail="category not found")
+    db_blog.category_id = blog.category_id
 
 
+   if blog.title is not None:
+    db_blog.title = blog.title
 
-   db_blog.title = blog.title
-   db_blog.content = blog.content
-   db_blog.status = blog.status
-   db_blog.image_url = blog.image_url
-   db_blog.category_id = blog.category_id
+   if blog.content is not None:
+    db_blog.content = blog.content
 
-   session.add(db_blog)
+   if blog.status is not None:
+    db_blog.status = blog.status
+
+   if blog.image_url is not None:
+    db_blog.image_url = blog.image_url
+
    session.commit()
    session.refresh(db_blog)
 
