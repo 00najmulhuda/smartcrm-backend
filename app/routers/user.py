@@ -76,3 +76,23 @@ def get_user(
         raise HTTPException(status_code=404, detail="user not found")
 
     return db_user
+
+@router.delete("/users/{user_id}", status_code=200)
+def delete_user(
+    user_id:int,
+    session:Session=Depends(get_session),
+    current_user = Depends(require_role("admin"))
+):
+    db_user = session.get(User,user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="user not found")
+
+    if db_user.id == current_user.id:
+        raise HTTPException(status_code=400, detail= "you can not delete yourself")
+
+    session.delete(db_user)
+    session.commit()
+
+    return {
+        "message" : "user deleted successfully"
+    }
