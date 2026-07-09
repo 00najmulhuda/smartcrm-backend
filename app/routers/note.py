@@ -1,9 +1,4 @@
-from ast import Not
-from email.policy import HTTP
-from gc import DEBUG_LEAK
-from signal import raise_signal
-from fastapi import APIRouter,Depends,HTTPException, status
-from sqlalchemy.sql.functions import current_date
+from fastapi import APIRouter,Depends,HTTPException
 from sqlmodel import Session,select
 
 from app.database import get_session
@@ -87,3 +82,23 @@ def update_note(
     session.refresh(db_note)
 
     return db_note
+
+@router.delete("/notes/{note_id}", status_code=200)
+def delete_note(
+    note_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_note = session.get(Note,note_id)
+    if not db_note:
+        raise HTTPException(status_code=404, detail="note not found")
+
+    if db_note.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="access denied")
+
+    session.delete(db_note)
+    session.commit()
+
+    return {
+        "message" : "note deleted successfully"
+    }
