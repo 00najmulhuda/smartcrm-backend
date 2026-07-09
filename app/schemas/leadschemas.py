@@ -23,7 +23,7 @@ class LeadRead(BaseModel):
 class LeadUpdate(BaseModel):
     name : Optional[str] = Field(default=None, min_length=3, max_length=15)
     email : Optional[EmailStr] = Field(default = None)
-    phone : Optional[str] = Field(default=None, pattern=fr"^\+?[0-9]{10,15}$")
+    phone : Optional[str] = Field(default=None, pattern=r"^\+?[0-9]{10,15}$")
     status : Optional[str] = Field(default=None)
     document_url : Optional[str] = Field(default=None)
 
