@@ -6,7 +6,7 @@ from datetime import datetime
 class LeadCreate(BaseModel):
     name : str = Field(min_length=3, max_length=15)
     email : EmailStr
-    phone : str = Field(pattern=fr"^\+?[0-9]{10,15}$")
+    phone : str = Field(pattern=r"^\+?[0-9]{10,15}$")
     status : str = Field(default="new")
     document_url : Optional[str] = Field(default=None)
 

@@ -1,5 +1,4 @@
-from tarfile import data_filter
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from app.database import get_session
 from app.dependencies import get_current_user, require_role
