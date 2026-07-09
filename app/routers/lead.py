@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.sql.functions import current_user
 from sqlmodel import SQLModel, Session,select
+from starlette.status import HTTP_307_TEMPORARY_REDIRECT
 
 from app.database import get_session
 from app.dependencies import get_current_user
@@ -46,3 +47,19 @@ def get_my_leads(
     ).all()
 
     return db_leads
+
+@router.get("/leads/{lead_id}", response_model=LeadRead)
+def get_my_lead(
+    lead_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_lead = session.get(Lead,lead_id)
+    if not db_lead:
+        raise HTTPException(
+            status_code=404, detail="lead not found"
+        )
+    if db_lead.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="access denied")
+    return db_lead
+    
