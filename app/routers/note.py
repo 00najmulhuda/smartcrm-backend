@@ -1,3 +1,4 @@
+from gc import DEBUG_LEAK
 from fastapi import APIRouter,Depends,HTTPException
 from sqlalchemy.sql.functions import current_date
 from sqlmodel import Session,select
@@ -35,5 +36,14 @@ def create_note(
     session.add(db_note)
     session.commit()
     session.refresh(db_note)
+
+    return db_note
+
+@router.get("/notes",response_model=list[NoteRead])
+def get_my_notes(
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_note = session.exec(select(Note).where(Note.user_id == current_user.id)).all()
 
     return db_note
