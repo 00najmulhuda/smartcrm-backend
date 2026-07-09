@@ -1,4 +1,5 @@
 from gc import DEBUG_LEAK
+from signal import raise_signal
 from fastapi import APIRouter,Depends,HTTPException
 from sqlalchemy.sql.functions import current_date
 from sqlmodel import Session,select
@@ -45,5 +46,20 @@ def get_my_notes(
     current_user = Depends(get_current_user)
 ):
     db_note = session.exec(select(Note).where(Note.user_id == current_user.id)).all()
+
+    return db_note
+
+@router.get("/notes/{note_id}",response_model=NoteRead)
+def get_note(
+    note_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_note = session.get(Note,note_id)
+    if not db_note:
+        raise HTTPException(status_code=404,detail="note not found")
+
+    if db_note.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="access denied")
 
     return db_note
