@@ -99,3 +99,23 @@ def update_lead(
     session.refresh(db_lead)
 
     return db_lead
+
+@router.delete("/leads/{lead_id}",status_code=200)
+def delete_lead(
+    lead_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_lead = session.get(Lead,lead_id)
+    if not db_lead:
+        raise HTTPException(status_code=404, detail="lead not found")
+
+    if db_lead.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="access denied")
+
+    session.delete(db_lead)
+    session.commit()
+
+    return {
+        "message": "lead deleted successfully"
+    }
