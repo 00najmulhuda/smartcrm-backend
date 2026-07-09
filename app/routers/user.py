@@ -1,8 +1,9 @@
+from turtle import getscreen
 from fastapi import APIRouter,Depends,HTTPException
 from sqlmodel import Session,select
 
 from app.database import get_session
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_role
 from app.auth import hash_password
 from app.models.user import User
 from app.schemas.userschemas import UserRead, UserUpdate
@@ -50,5 +51,28 @@ def update_user(
 
     session.commit()
     session.refresh(db_user)
+
+    return db_user
+
+@router.get("/users",response_model=list[UserRead])
+def get_all_users(
+    session:Session = Depends(get_session),
+    current_user = Depends(require_role("admin"))
+):
+    db_users = session.exec(
+        select(User)
+    ).all()
+
+    return db_users
+
+@router.get("/users/{user_id}", response_model=UserRead)
+def get_user(
+    user_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(require_role("admin"))
+):
+    db_user = session.get(User,user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="user not found")
 
     return db_user
