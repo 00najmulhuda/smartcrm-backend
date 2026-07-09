@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.sql.functions import current_user
 from sqlmodel import SQLModel, Session,select
 
 from app.database import get_session
@@ -33,3 +34,15 @@ def create_lead(
     session.refresh(db_lead)
 
     return db_lead
+
+@router.get("/leads", response_model=list[LeadRead])
+def get_my_leads(
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_leads = session.exec(
+        select(Lead)
+        .where(Lead.user_id == current_user.id)
+    ).all()
+
+    return db_leads
