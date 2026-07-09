@@ -1,6 +1,8 @@
+from ast import Not
+from email.policy import HTTP
 from gc import DEBUG_LEAK
 from signal import raise_signal
-from fastapi import APIRouter,Depends,HTTPException
+from fastapi import APIRouter,Depends,HTTPException, status
 from sqlalchemy.sql.functions import current_date
 from sqlmodel import Session,select
 
@@ -8,7 +10,7 @@ from app.database import get_session
 from app.dependencies import get_current_user
 from app.models.note import Note
 from app.models.lead import Lead
-from app.schemas.noteschemas import NoteCreate, NoteRead
+from app.schemas.noteschemas import NoteCreate, NoteRead, NoteUpdate
 
 router = APIRouter(
     prefix="/note",
@@ -61,5 +63,27 @@ def get_note(
 
     if db_note.user_id != current_user.id and current_user.role != "admin":
         raise HTTPException(status_code=403, detail="access denied")
+
+    return db_note
+
+@router.put("/notes/{note_id}", response_model=NoteRead)
+def update_note(
+    update:NoteUpdate,
+    note_id:int,
+    session:Session = Depends(get_session),
+    current_user = Depends(get_current_user)
+):
+    db_note = session.get(Note,note_id)
+    if not db_note:
+        raise HTTPException(status_code=404,detail="note not found")
+    
+    if db_note.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="access denied")
+
+    if update.content is not None:
+        db_note.content = update.content
+
+    session.commit()
+    session.refresh(db_note)
 
     return db_note
