@@ -1,4 +1,4 @@
-# 🚀 Blog CRM Backend API
+#  Blog CRM Backend API
 
 > A production-ready backend built with **FastAPI**, **PostgreSQL**, and **SQLModel** featuring secure JWT authentication, role-based authorization, Blog Management, Mini CRM, File Uploads, Email Notifications, and interactive Swagger documentation.
 
