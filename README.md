@@ -252,7 +252,7 @@ Protected Routes
 ```bash
 git clone https://github.com/00najmulhuda/smartcrm-backend.git
 
-cd YOUR_REPOSITORY
+cd https://github.com/00najmulhuda/smartcrm-backend
 
 python -m venv venv
 
