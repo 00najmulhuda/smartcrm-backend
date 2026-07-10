@@ -1,3 +1,5 @@
+import email
+from token import tok_name
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select 
 from app.auth import hash_password,verify_password,create_access_token,verify_access_token
@@ -5,6 +7,7 @@ from app.models.user import User
 from app.database import get_session
 from app.schemas.userschemas import UserRead,UserCreate
 from fastapi.security import OAuth2PasswordRequestForm
+from app.services.email_utils import send_email
 
 router = APIRouter(
     prefix="/auth",
@@ -31,6 +34,23 @@ def create_user(user:UserCreate, session:Session = Depends(get_session)):
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
+    send_email(
+        to_email = db_user.email,
+        subject = "Welcome to Najmul Huda Blog_CRM project",
+        body = f"""
+Hello {db_user.name},
+
+Your account has been created successfully.
+
+Welcome to Najmul Blog CRM Project.
+
+Happy Coding!
+
+Regards,
+Najmul
+"""
+
+    )
     return db_user
 
 
@@ -52,6 +72,23 @@ def login_user(form_data : OAuth2PasswordRequestForm = Depends(), session:Sessio
             "role": check_email.role
         }
     )
+
+    send_email(
+        to_email=check_email.email,
+        subject="Login Alert - Najmul Blog CRM Project",
+        body=f"""
+Hello {check_email.name},
+Your account was successfully logged in.
+
+If this was you, no action is required.
+
+If you did not log in, please change your password immediately.
+
+Regards,
+Najmul
+        """
+    )
+
     return {
         "access_token" : access_token,
         "token_type" : "bearer"
