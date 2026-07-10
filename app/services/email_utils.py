@@ -19,7 +19,7 @@ def send_email(to_email:str, subject:str,body:str):
 
     message.set_content(body)
 
-    with smtplib.SMTP(SMTP_SERVER,SMTP_PORT) as server:
+    with smtplib.SMTP(SMTP_SERVER,int(SMTP_PORT)) as server:
         server.starttls()
         server.login(SMTP_EMAIL,SMTP_PASSWORD)
         server.send_message(message)
