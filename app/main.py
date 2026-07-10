@@ -1,4 +1,6 @@
+from os import name
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.database import create_db_and_tables
 from app.models import note
 from app.routers import auth
@@ -9,6 +11,13 @@ from app.routers import user
 from app.routers import upload
 
 app = FastAPI()
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory = "uploads"),
+    name = "uploads"
+)
+
 app.include_router(auth.router)
 app.include_router(blog.router)
 app.include_router(lead.router)
