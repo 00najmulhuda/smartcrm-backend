@@ -1,4 +1,5 @@
 from os import name
+import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.database import create_db_and_tables
@@ -9,6 +10,8 @@ from app.routers import lead
 from app.routers import note
 from app.routers import user
 from app.routers import upload
+
+os.makedirs("uploads", exist_ok=True)
 
 app = FastAPI()
 
