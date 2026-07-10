@@ -73,21 +73,21 @@ def login_user(form_data : OAuth2PasswordRequestForm = Depends(), session:Sessio
         }
     )
 
-    send_email(
-        to_email=check_email.email,
-        subject="Login Alert - Najmul Blog CRM Project",
-        body=f"""
-Hello {check_email.name},
-Your account was successfully logged in.
+#     send_email(
+#         to_email=check_email.email,
+#         subject="Login Alert - Najmul Blog CRM Project",
+#         body=f"""
+# Hello {check_email.name},
+# Your account was successfully logged in.
 
-If this was you, no action is required.
+# If this was you, no action is required.
 
-If you did not log in, please change your password immediately.
+# If you did not log in, please change your password immediately.
 
-Regards,
-Najmul
-        """
-    )
+# Regards,
+# Najmul
+#         """
+#     )
 
     return {
         "access_token" : access_token,
