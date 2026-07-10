@@ -250,7 +250,7 @@ Protected Routes
 # ⚙️ Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/00najmulhuda/smartcrm-backend.git
 
 cd YOUR_REPOSITORY
 
@@ -305,15 +305,35 @@ http://127.0.0.1:8000/redoc
 
 ---
 
-# 📸 Screenshots
+## 📸 Screenshots
 
-Add screenshots of:
+### Swagger UI
 
-- Swagger UI
-- PostgreSQL Database
-- File Upload API
-- Email Notification
-- Project Folder Structure
+![Swagger UI](screenshots/swagger-ui.png)
+
+---
+
+### PostgreSQL Database
+
+![PostgreSQL](screenshots/postgres-db.png)
+
+---
+
+### File Upload API
+
+![File Upload](screenshots/file-upload.png)
+
+---
+
+### Email Notification
+
+![Email API](screenshots/email-api.png)
+
+---
+
+### Project Folder Structure
+
+![Folder Structure](screenshots/folder-structure.png)
 
 ---
 
