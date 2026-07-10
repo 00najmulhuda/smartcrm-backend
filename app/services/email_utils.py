@@ -1,6 +1,6 @@
-import os #for read environment variables from .env file
-import smtplib #SMTP library - it is responsible for actually connecting with gmail and sendin email
-from email.message import EmailMessage #instead of writing ram email text.Python provides EmailMessage object
+import os 
+import smtplib 
+from email.message import EmailMessage 
 from dotenv import load_dotenv
 
 load_dotenv()
