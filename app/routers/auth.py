@@ -34,23 +34,22 @@ def create_user(user:UserCreate, session:Session = Depends(get_session)):
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
-    send_email(
-        to_email = db_user.email,
-        subject = "Welcome to Najmul Huda Blog_CRM project",
-        body = f"""
-Hello {db_user.name},
+    
+    try:
+      send_email(
+         to_email=db_user.email,
+         subject="Welcome to SmartCRM",
+         body=f"""
+Hi {db_user.name},
 
 Your account has been created successfully.
 
-Welcome to Najmul Blog CRM Project.
-
-Happy Coding!
-
-Regards,
-Najmul
+Thanks for joining SmartCRM!
 """
-
     )
+    except Exception as e:
+      print(f"Registration email failed: {e}")
+
     return db_user
 
 
@@ -73,21 +72,20 @@ def login_user(form_data : OAuth2PasswordRequestForm = Depends(), session:Sessio
         }
     )
 
-#     send_email(
-#         to_email=check_email.email,
-#         subject="Login Alert - Najmul Blog CRM Project",
-#         body=f"""
-# Hello {check_email.name},
-# Your account was successfully logged in.
+    try:
+      send_email(
+         to_email=check_email.email,
+         subject="Login Alert",
+         body=f"""
+Hi {check_email.name},
 
-# If this was you, no action is required.
+You have successfully logged into your SmartCRM account.
 
-# If you did not log in, please change your password immediately.
-
-# Regards,
-# Najmul
-#         """
-#     )
+If this wasn't you, please change your password immediately.
+"""
+    )
+    except Exception as e:
+       print(f"Login email failed: {e}")
 
     return {
         "access_token" : access_token,
