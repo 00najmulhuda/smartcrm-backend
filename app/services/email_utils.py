@@ -26,7 +26,7 @@ def send_email(to_email: str, subject: str, body: str):
     message["Subject"] = subject
     message.set_content(body)
 
-    with smtplib.SMTP(
+    with smtplib.SMTP_SSL(
         SMTP_SERVER,
         SMTP_PORT,
         timeout=20
@@ -36,8 +36,8 @@ def send_email(to_email: str, subject: str, body: str):
 
         print("Connected to SMTP Server")
 
-        server.starttls()
-        print("TLS Started")
+        # server.starttls()
+        # print("TLS Started")
 
         server.login(SMTP_EMAIL, SMTP_PASSWORD)
         print("Logged In")
