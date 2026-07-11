@@ -1,48 +1,42 @@
 import os
-import smtplib
-from email.message import EmailMessage
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SMTP_EMAIL = os.getenv("SMTP_EMAIL")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-SMTP_SERVER = os.getenv("SMTP_SERVER")
-SMTP_PORT = int(os.getenv("SMTP_PORT"))
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
 
 def send_email(to_email: str, subject: str, body: str):
 
-    print("=" * 50)
-    print("SMTP_SERVER :", SMTP_SERVER)
-    print("SMTP_PORT   :", SMTP_PORT)
-    print("SMTP_EMAIL  :", SMTP_EMAIL)
-    print("=" * 50)
+    url = "https://api.brevo.com/v3/smtp/email"
 
-    message = EmailMessage()
+    headers = {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json"
+    }
 
-    message["From"] = SMTP_EMAIL
-    message["To"] = to_email
-    message["Subject"] = subject
-    message.set_content(body)
+    payload = {
+        "sender": {
+            "name": "SmartCRM",
+            "email": "000najmulhuda@gmail.com"
+        },
+        "to": [
+            {
+                "email": to_email
+            }
+        ],
+        "subject": subject,
+        "textContent": body
+    }
 
-    with smtplib.SMTP_SSL(
-        SMTP_SERVER,
-        SMTP_PORT,
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload,
         timeout=20
-    ) as server:
+    )
 
-        server.set_debuglevel(1)
-
-        print("Connected to SMTP Server")
-
-        # server.starttls()
-        # print("TLS Started")
-
-        server.login(SMTP_EMAIL, SMTP_PASSWORD)
-        print("Logged In")
-
-        server.send_message(message)
-        print("Email Sent Successfully")
-
-
+    print("Status Code:", response.status_code)
+    print("Response:", response.text)
